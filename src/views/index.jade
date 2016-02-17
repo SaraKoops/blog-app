@@ -1,0 +1,44 @@
+doctype html
+html
+	head 
+		title blog
+		link(rel='stylesheet' href='styles/index.css')
+		link(href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css')
+		script(src='https://code.jquery.com/jquery-2.2.0.js')
+		script(src='js/index.js')
+	body
+		h1 Welcome.
+		div(id='mandarijn')
+			p(id='loginp') login 
+			p(id='registerp') register
+		div(id='register')
+			form(action='/register' method='post')
+				label username:
+				br
+				input(type='text' name='newUserName' placeholder=' type a username')
+				br
+				br
+				label password:
+				br
+				input(type='password' name='newPassWord' placeholder=' type a password')
+				br
+				br
+				label confirm your password:
+				br
+				input(type='password' name='checkPassword' placeholder=' re-type your password')
+				br
+				br
+				input(type='submit' value='Register')
+		div(id='login')
+			form(action='/login' method='post')
+				label username:
+				br
+				input(type='text' name='userName' placeholder=' type your username')
+				br
+				br
+				label password:
+				br
+				input(type='password' name='passWord' placeholder=' type your password')
+				br
+				br
+				input(type='submit' value='Login')
