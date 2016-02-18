@@ -11,6 +11,8 @@ html
 		div(id='mandarijn')
 			p(id='loginp') login 
 			p(id='registerp') register
+		p(id='error')=error
+		p(id='none')=none
 		div(id='register')
 			form(action='/register' method='post')
 				label username:
@@ -25,7 +27,7 @@ html
 				br
 				label confirm your password:
 				br
-				input(type='password' name='checkPassword' placeholder=' re-type your password')
+				input(type='password' name='checkPassWord' placeholder=' re-type your password')
 				br
 				br
 				input(type='submit' value='Register')
