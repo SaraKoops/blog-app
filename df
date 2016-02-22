@@ -1,0 +1,11 @@
+                                   Table "public.users"
+  Column   |           Type           |                     Modifiers                      
+-----------+--------------------------+----------------------------------------------------
+ id        | integer                  | not null default nextval('users_id_seq'::regclass)
+ username  | character varying(255)   | 
+ password  | character varying(255)   | 
+ createdAt | timestamp with time zone | not null
+ updatedAt | timestamp with time zone | not null
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+

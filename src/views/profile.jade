@@ -1,0 +1,32 @@
+doctype html
+html
+	head
+		link(rel='stylesheet' href='styles/profile.css')
+		link(href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css')
+		script(src='https://code.jquery.com/jquery-2.2.0.js')
+		script(src='js/profile.js')
+	body
+	
+		h2(id='welcomeback') Welcome back,
+		h1(id='kop') #{nameUser}
+			
+		div(id='createpost')
+			form(action='/profile' method='post')
+				h3 Create a new post:
+				label Title
+				br
+				input(class='message' type='text' name='newTitle' placeholder='title of your post')
+				br
+				br
+				label Text
+				br
+				textarea(class='message text' type='text' name='newText' placeholder='write your message')
+				br
+				br
+				input(type='submit' value='Post')
+		div(id='logout')
+			p(id='user') #{nameUser}
+			a(href='/logout') logout
+
+		
+
