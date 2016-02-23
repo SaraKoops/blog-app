@@ -4,19 +4,13 @@ $(document).ready(function(){
 
 	timer = setTimeout(function(){ 
 
-		console.log("test")
-
-		$("#kop, #welcomeback").fadeOut(600, function(){
-
-			console.log("test2")
+		$("#kop, #welcomeback").fadeOut(500, function(){
 
 			$("#createpost").css("display", "block");
 
 		});
 
-	},3000);
-
-	console.log("test3")
+	},1000);
 
 	// clearTimeout(timer);
 

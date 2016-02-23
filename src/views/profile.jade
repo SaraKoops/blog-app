@@ -13,6 +13,7 @@ html
 		div(id='createpost')
 			form(action='/profile' method='post')
 				h3 Create a new post:
+				p=error
 				label Title
 				br
 				input(class='message' type='text' name='newTitle' placeholder='title of your post')
@@ -24,6 +25,9 @@ html
 				br
 				br
 				input(type='submit' value='Post')
+		div(id='wall')
+			ul
+				li=all
 		div(id='logout')
 			p(id='user') #{nameUser}
 			a(href='/logout') logout

@@ -31,11 +31,11 @@ var user = sequelize.define("user", {
 	password: Sequelize.STRING
 });
 
-// var message = sequelize.define("message", {
-// 	username: Sequelize.STRING
-// 	title: Sequelize.STRING,
-// 	text: Sequielize.TEXT
-// });
+var message = sequelize.define("message", {
+	username: Sequelize.STRING,
+	title: Sequelize.STRING,
+	text: Sequelize.TEXT
+});
 
 //////////////////////////////////
 
@@ -46,8 +46,9 @@ app.get('/', function (request, response){
 
 app.post('/register', function (request, response){
 
-var username = request.body.newUserName;
-var usernameKleineLetter = username.toLowerCase();
+	var username = request.body.newUserName;
+	var usernameKleineLetter = username.toLowerCase();
+
 
 	if (request.body.newPassWord == request.body.checkPassWord) {
 
@@ -86,6 +87,8 @@ app.post('/login', function (request, response){
 
 	var username = request.body.userName;
 	var usernameKleineLetter = username.toLowerCase();
+	request.session.kleineLetter = usernameKleineLetter
+
 
 	user.findAll({ 
 		where: {
@@ -106,20 +109,22 @@ app.post('/login', function (request, response){
 
 			var nameUser = data[0].username
 
+			//////////////////////////////////////////// gebruikersnaam met hoofdletter wanneer user inlogt
+
 			var naamHoofdletter = undefined
 
 			function capitalizeFirstLetter(nameUser) {
 
 				naamHoofdletter = nameUser.charAt(0).toUpperCase() + nameUser.slice(1);
-
-				console.log(naamHoofdletter);
 			}
 
 			capitalizeFirstLetter(nameUser);
 
-				request.session.capitalLetter = naamHoofdletter // you can put everything into a session to use in a different route
+			request.session.capitalLetter = naamHoofdletter // you can put everything into a session to use in a different route
 
-				response.redirect('/profile');
+			////////////////////////////////////////////////
+
+			response.redirect('/profile');
 
 			}
 
@@ -127,14 +132,41 @@ app.post('/login', function (request, response){
 })
 
 app.get('/profile', function (request, response) {
-	
-	var logIn = request.session.logIn; 
+
+	var usernameKleineLetter = request.session.kleineLetter // gebruikersnaam in kleine letters
+
+	var logIn = request.session.logIn; // login-in is true
 
 	if (logIn === true) {
 
-		var nameUser = request.session.capitalLetter
+		message.findAll({ 
+			where: {
+				username: usernameKleineLetter, 
+			}
+		})
 
-		response.render('profile', {nameUser: nameUser});
+		.then(function(data){
+
+			console.log(data);
+
+			////// naam user boven logout link en intro fade out
+				
+			var nameUser = request.session.capitalLetter
+
+			//////
+
+			if (data.length == 0) {
+
+				response.render("profile", {nameUser: nameUser, all: "You have not posted a message yet"});
+
+			} else {  
+
+				var message = data.title + ": " + data[i].text;
+
+				response.render("profile", {nameUser: nameUser, all: message});
+
+			}
+		})	
 		
 	} else {
 
@@ -145,17 +177,21 @@ app.get('/profile', function (request, response) {
 
 app.post('/profile', function(request, response){
 
-	var username = request.session.capitalLetter
+			var usernameKleineLetter = request.session.kleineLetter
 
-	if (request.body.newTitle && request.body.newText !== []) {
+			console.log(usernameKleineLetter);
 
-		// message.create({
 
-		// 	username: username,
-		// 	title: request.body.newTitle,
-		// 	text: request.body.newText
+			if (request.body.newTitle && request.body.newText !== []) {
 
-		// });
+				console.log("test")
+
+		message.create({
+
+			username: usernameKleineLetter,
+			title: request.body.newTitle,
+			text: request.body.newText
+		});
 
 	} else {
 
@@ -166,8 +202,8 @@ app.post('/profile', function(request, response){
 
 
 app.get('/logout', function (request, response){
-	request.session.logIn = false;
-	response.render('index', {error: "Successfully logged out"})
+			request.session.logIn = false;
+			response.render('index', {error: "Successfully logged out"})
 
 })
 
