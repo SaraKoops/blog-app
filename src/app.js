@@ -1,4 +1,3 @@
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
@@ -29,13 +28,13 @@ app.use(session({
 var user = sequelize.define("user", {
 	username: Sequelize.STRING,
 	password: Sequelize.STRING
-});
+}, {freezeTableName: true});
 
 var message = sequelize.define("message", {
 	username: Sequelize.STRING,
 	title: Sequelize.STRING,
 	text: Sequelize.TEXT
-});
+}, {freezeTableName: true});
 
 //////////////////////////////////
 
@@ -47,52 +46,41 @@ app.get('/', function (request, response){
 app.post('/register', function (request, response){
 
 	var username = request.body.newUserName;
-	var usernameKleineLetter = username.toLowerCase();
+	var unLowerCase= username.toLowerCase();
 
 
 	if (request.body.newPassWord == request.body.checkPassWord) {
 
 		user.create({
-			username: usernameKleineLetter,
+			username: unLowerCase,
 			password: request.body.newPassWord
 		});
 
 		request.session.logIn = true;
 
-		var lcusername = request.body.newUserName;
-		var naamHoofdletter = undefined;
+		var unUpperCase = unLowerCase.charAt(0).toUpperCase() + unLowerCase.slice(1);    	
 
-		function capitalizeFirstLetter(username) {
+		request.session.unUpperCase = unUpperCase
 
-			naamHoofdletter = lcusername.charAt(0).toUpperCase() + lcusername.slice(1);    	
-		}
-
-		capitalizeFirstLetter(lcusername);
-
-		request.session.capitalLetter = naamHoofdletter
-
-		response.redirect('/profile')
+		response.redirect('/profile');
 
 	} else {
 
-		console.log("typo in password");
-
 		var error = "typo in password, try again"
 		response.render("index", {error: error})
-
 	}
 })
 
 app.post('/login', function (request, response){
 
 	var username = request.body.userName;
-	var usernameKleineLetter = username.toLowerCase();
-	request.session.kleineLetter = usernameKleineLetter
+	var unLowerCase = username.toLowerCase();
+	request.session.unLowerCase = unLowerCase;
 
 
 	user.findAll({ 
 		where: {
-			username: usernameKleineLetter, 
+			username: unLowerCase, 
 			password: request.body.passWord
 		}
 	})
@@ -109,61 +97,57 @@ app.post('/login', function (request, response){
 
 			var nameUser = data[0].username
 
-			//////////////////////////////////////////// gebruikersnaam met hoofdletter wanneer user inlogt
+			var unUpperCase = nameUser.charAt(0).toUpperCase() + nameUser.slice(1); //maak username met hoofdleter voor animatie
 
-			var naamHoofdletter = undefined
-
-			function capitalizeFirstLetter(nameUser) {
-
-				naamHoofdletter = nameUser.charAt(0).toUpperCase() + nameUser.slice(1);
-			}
-
-			capitalizeFirstLetter(nameUser);
-
-			request.session.capitalLetter = naamHoofdletter // you can put everything into a session to use in a different route
-
-			////////////////////////////////////////////////
+			request.session.unUpperCase = unUpperCase// you can put everything into a session to use in a different route
 
 			response.redirect('/profile');
 
-			}
+		}
 
-		})
+	})
 })
 
 app.get('/profile', function (request, response) {
 
-	var usernameKleineLetter = request.session.kleineLetter // gebruikersnaam in kleine letters
-
-	var logIn = request.session.logIn; // login-in is true
+	var unLowerCase = request.session.unLowerCase // gebruikersnaam in kleine letters;
+	var logIn = request.session.logIn; // login-in is true;
 
 	if (logIn === true) {
 
 		message.findAll({ 
 			where: {
-				username: usernameKleineLetter, 
+				username: unLowerCase, 
 			}
 		})
 
 		.then(function(data){
-
-			console.log(data);
-
-			////// naam user boven logout link en intro fade out
 				
-			var nameUser = request.session.capitalLetter
-
-			//////
+			var unUpperCase = request.session.unUpperCase // naam user boven logout link en intro fade out;
 
 			if (data.length == 0) {
 
-				response.render("profile", {nameUser: nameUser, all: "You have not posted a message yet"});
+				response.render("profile", {nameUser: unUpperCase, all: "You have not posted a message yet"});
 
 			} else {  
 
-				var message = data.title + ": " + data[i].text;
+				var messages = [];
 
-				response.render("profile", {nameUser: nameUser, all: message});
+				for(i = 0; i < data.length; i++) {
+
+					messageObject = {
+						title: data[i].title,
+						text: data[i].text
+					}
+
+				messages.push(messageObject);
+
+				}
+
+			request.session.messages = messages;
+
+			response.render("profile", {nameUser: unUpperCase}); 
+			// all: messages meegeven aan profile om lijst berichten door user weer te geven zonder AJAX
 
 			}
 		})	
@@ -174,28 +158,82 @@ app.get('/profile', function (request, response) {
 	}
 })
 
+app.get('/myposts', function (request, response){
+
+	var unLowerCase = request.session.unLowerCase
+
+	message.findAll({ 
+			where: {
+				username: unLowerCase, 
+			}
+		})
+	.then(function(data){
+
+		var messages = [];
+
+		for(i = 0; i < data.length; i++) { 
+
+			messages.push(data[i].title + ": " + data[i].text + "<br>")
+
+		}
+
+	response.send(messages)
+
+	})
+})
+
+app.get('/allposts', function (request, response){
+
+	message.findAll().then(function(data){
+
+		console.log("kikkers zijn groen")
+
+		var messages = [];
+
+		for(i = 0; i < data.length; i++) { 
+
+			messages.push(data[i].title + ": " + data[i].text + "<br>")
+
+		}
+
+	response.send(messages)
+
+	})
+})
+
 
 app.post('/profile', function(request, response){
 
-			var usernameKleineLetter = request.session.kleineLetter
+	var unLowerCase = request.session.unLowerCase;
+	var unUpperCase = request.session.unUpperCase;
 
-			console.log(usernameKleineLetter);
+	if (request.body.newTitle && request.body.newText !== []) {
 
-
-			if (request.body.newTitle && request.body.newText !== []) {
-
-				console.log("test")
+		console.log("Creating message in database");
 
 		message.create({
 
-			username: usernameKleineLetter,
+			username: unLowerCase,
 			title: request.body.newTitle,
 			text: request.body.newText
 		});
 
+		// var messages = request.session.messages
+
+		// var newMessage = {
+		// 	title: request.body.newTitle,
+		// 	text: request.body.newText
+		// }
+
+		// console.log(newMessage);
+
+		// messages.push(newMessage);
+
+		response.render("profile", {nameUser: unUpperCase, error: "Post Successfully written"});
+
 	} else {
 
-		response.render('/profile', {error: "empty field, please fill in both forms"})
+		response.render('/profile', {nameUser: unUpperCase, error: "empty field, please fill in both forms"})
 
 	}
 })

@@ -26,8 +26,18 @@ html
 				br
 				input(type='submit' value='Post')
 		div(id='wall')
+			//- ul
+			//- for val in all
+			//- 	li
+			//- 		p= "Title: " + val.title
+			//- 		p= val.text
+
 			ul
-				li=all
+				li(id='list') hoi
+
+		div(id='wall2')
+			ul
+				li(id='list2') hallo
 		div(id='logout')
 			p(id='user') #{nameUser}
 			a(href='/logout') logout
