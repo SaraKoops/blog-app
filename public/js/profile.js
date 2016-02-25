@@ -13,6 +13,12 @@ $(document).ready(function(){
 
 	},1000);
 
+	// clearTimeout(timer);
+
+	// timer = setTimeout(function(){ 
+
+function runAjax (){ 
+
 	$.ajax ({ // ajax request messages by user
 				url: '/myposts',
 				error: function () {
@@ -42,15 +48,34 @@ $(document).ready(function(){
 			   	type: 'GET'
 
 			});
+};
 
+runAjax();
 
+	// },2000);
 
+	$("#post").on('click', function(){
 
+		var nMessage = {baby: $('#title').val(), maybe: $('#text').val()};
 
+		$.ajax ({ // ajax to post message to database
+				url: '/createpost',
+				data: nMessage,
+				error: function () {
+					console.log('ajax create not working');
+				}, 
+			   	success: function(data){
+			   		console.log('ajax create working');
 
+			   		runAjax();
 
+			   		$('#error').html(data);
 
+			   	},
 
+			   	type: 'GET'
 
+			});
+	})
 
 })

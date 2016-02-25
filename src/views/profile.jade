@@ -11,20 +11,21 @@ html
 		h1(id='kop') #{nameUser}
 			
 		div(id='createpost')
-			form(action='/profile' method='post')
+			form
 				h3 Create a new post:
-				p=error
+				p(id='error')=error
 				label Title
 				br
-				input(class='message' type='text' name='newTitle' placeholder='title of your post')
+				input(id='title' class='message' type='text' name='newTitle' placeholder='title of your post')
 				br
 				br
 				label Text
 				br
-				textarea(class='message text' type='text' name='newText' placeholder='write your message')
+				textarea(id='text' class='message text' type='text' name='newText' placeholder='write your message')
 				br
 				br
-				input(type='submit' value='Post')
+				//- input(type='submit' value='Post')	
+				h2(id="post") POST!				
 		div(id='wall')
 			//- ul
 			//- for val in all

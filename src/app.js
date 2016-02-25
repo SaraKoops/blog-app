@@ -201,6 +201,35 @@ app.get('/allposts', function (request, response){
 	})
 })
 
+app.get('/createpost', function (request, response){
+	var nTitle = request.query.baby;
+	var nText = request.query.maybe;
+	var unLowerCase = request.session.unLowerCase;
+
+	console.log(nTitle);
+	console.log(nText);
+
+	if (nTitle && nText !== "") {
+
+		console.log("Creating message in database with AJAX");
+
+		message.create({
+
+			username: unLowerCase,
+			title: nTitle,
+			text: nText
+		});
+
+		response.redirect('/myposts');
+
+	} else {
+
+		response.send("empty field, please fill in both forms");
+
+	}
+
+
+})
 
 app.post('/profile', function(request, response){
 
@@ -217,6 +246,8 @@ app.post('/profile', function(request, response){
 			title: request.body.newTitle,
 			text: request.body.newText
 		});
+
+
 
 		// var messages = request.session.messages
 
