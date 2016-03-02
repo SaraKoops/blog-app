@@ -160,21 +160,6 @@ app.get('/profile', function (request, response) {
 
 			} else {  
 
-				// var messages = [];
-
-				// for(i = 0; i < data.length; i++) {
-
-				// 	messageObject = {
-				// 		title: data[i].title,
-				// 		text: data[i].text
-				// 	}
-
-				// 	messages.push(messageObject);
-
-				// }
-
-				// request.session.messages = messages; 
-
 				response.render("profile", {nameUser: unUpperCase});
 			}
 		})	
