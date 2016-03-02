@@ -2,33 +2,35 @@ doctype html
 html
 	head
 		link(rel='stylesheet' href='styles/profile.css')
+		link(href='https://fonts.googleapis.com/css?family=Advent+Pro:300' rel='stylesheet' type='text/css')
 		script(src='https://code.jquery.com/jquery-2.2.0.js')
 		script(src='js/profile.js')
 	body
-		div(id='createpost')
-		form
-			h3 Create a new post:
-			p(id='error')=bloem
-			label Title
-			br
-			input(id='title' class='message' type='text' name='newTitle' placeholder='title of your post')
-			br
-			br
-			label Text
-			br
-			textarea(id='text' class='message text' type='text' name='newText' placeholder='write your message')
-			br
-			br
-			p(id="post") Post							
-		div(id='wall' class='vak')
-			ul
-				li(id='list') hoi
-		div(id='wall2' class='vak')
-			ul
-				li(id='list2') hallo
-		div(id='logout')
-			p(id='user') #{nameUser}
-			a(href='/logout') logout
+		div(id='wrapper')
+			div(id='logout')
+				p(id='user') #{nameUser}
+				a(href='/logout') logout
+			div(id='createpost' class='div')
+				form
+					h2 Create a new post:
+					p(id='error')=bloem
+					label Title
+					br
+					input(id='title' class='message' type='text' name='newTitle' placeholder='title of your post')
+					br
+					br
+					label Text
+					br
+					textarea(id='text' class='message text' type='text' name='newText' placeholder='write your message')
+					br
+					p(id="post") post							
+			div(id='wall' class='div')
+				h2 My posts:
+				p(id='list') hoi
+			div(id='wall2' class='div')
+				h2 All posts:
+				p(id='list2') hallo
 
+			
 		
 
