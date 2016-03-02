@@ -1,22 +1,6 @@
 
 $(document).ready(function(){
 
-	var timer;
-
-	timer = setTimeout(function(){ 
-
-		$("#kop, #welcomeback").fadeOut(500, function(){
-
-			$("#createpost").css("display", "block");
-
-		});
-
-	},1000);
-
-	// clearTimeout(timer);
-
-	// timer = setTimeout(function(){ 
-
 function runAjax (){ 
 
 	$.ajax ({ // ajax request messages by user
@@ -43,6 +27,7 @@ function runAjax (){
 			   		console.log('ajax allposts working')
 
 			   		$('#list2').html(data);
+
 			   	},
 
 			   	type: 'GET'
@@ -51,8 +36,6 @@ function runAjax (){
 };
 
 runAjax();
-
-	// },2000);
 
 	$("#post").on('click', function(){
 

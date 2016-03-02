@@ -4,7 +4,7 @@ body {
    top: 0;
  }
 	
-#kop {
+/*#kop {
 	font-family: 'Pacifico', cursive;
 	font-size: 150px;
  	text-align: center;
@@ -12,8 +12,8 @@ body {
  	margin-left: auto;
  	margin-right: auto;
  	color: #29242D;
-}
-
+}*/
+/*
 h2 {
 	font-style: italic;
 	margin: 0;
@@ -22,18 +22,39 @@ h2 {
 	top: 110px;
 	left: 390px;
 	
-}
+}*/
 
 #createpost {
 	border: 1px black solid;
 	width: 220px;
-	height: 360px;
+	height: auto;
 	padding: 2em;
 	position: absolute;
 	top: 60px;
 	left: 20px;
 	right: 0;
-	display: none;
+	/*display: none;*/
+}
+
+.vak {
+	border: 1px black solid;
+	width: 220px;
+	height: auto;
+	padding: 2em;
+	position: absolute;
+	top: 60px;
+	left: 341px;
+	right: 0;
+	/*display: none;*/
+}
+
+.vak li {
+	list-style-type: none;
+
+}
+
+#wall2 {
+	left: 660px!important;
 }
 
 .message {
@@ -45,6 +66,16 @@ h2 {
 
 .text {
 	height: 150px;
+}
+
+#post {
+	border: 1px solid black;
+	height: auto;
+	width: 50px;
+	padding: 0.8em;
+	cursor: pointer;
+	background-color: black;
+	color: white;
 }
 
 #logout {

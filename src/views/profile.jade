@@ -2,41 +2,28 @@ doctype html
 html
 	head
 		link(rel='stylesheet' href='styles/profile.css')
-		link(href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css')
 		script(src='https://code.jquery.com/jquery-2.2.0.js')
 		script(src='js/profile.js')
 	body
-	
-		h2(id='welcomeback') Welcome back,
-		h1(id='kop') #{nameUser}
-			
 		div(id='createpost')
-			form
-				h3 Create a new post:
-				p(id='error')=error
-				label Title
-				br
-				input(id='title' class='message' type='text' name='newTitle' placeholder='title of your post')
-				br
-				br
-				label Text
-				br
-				textarea(id='text' class='message text' type='text' name='newText' placeholder='write your message')
-				br
-				br
-				//- input(type='submit' value='Post')	
-				h2(id="post") POST!				
-		div(id='wall')
-			//- ul
-			//- for val in all
-			//- 	li
-			//- 		p= "Title: " + val.title
-			//- 		p= val.text
-
+		form
+			h3 Create a new post:
+			p(id='error')=bloem
+			label Title
+			br
+			input(id='title' class='message' type='text' name='newTitle' placeholder='title of your post')
+			br
+			br
+			label Text
+			br
+			textarea(id='text' class='message text' type='text' name='newText' placeholder='write your message')
+			br
+			br
+			p(id="post") Post							
+		div(id='wall' class='vak')
 			ul
 				li(id='list') hoi
-
-		div(id='wall2')
+		div(id='wall2' class='vak')
 			ul
 				li(id='list2') hallo
 		div(id='logout')

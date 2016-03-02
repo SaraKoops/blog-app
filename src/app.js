@@ -1,7 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var app = express ();
+var app = express();
+var bcrpt = require('bcrypt');
 
 app.set('views', 'src/views');
 app.set('view engine', 'jade');
@@ -12,13 +13,11 @@ app.use(session({
 	saveUninitialized: false
 }));
 
-	app.use(express.static('public')); // elk statische file dat je gebruikt leest ie uit de folder public.
+	app.use(express.static('public')); // every static file (jade) grapping from folder public
 	app.use(bodyParser.urlencoded({extended: true}));
 
 	var pg = require('pg');
-
 	var Sequelize = require('sequelize');
-
 	var sequelize = new Sequelize("postgres://sara:123@localhost/sara");
 // var sequelize = new Sequelize ('blog', 'sara', nul, {
 // 	host: 'localhost',
@@ -28,12 +27,27 @@ app.use(session({
 var user = sequelize.define("user", {
 	username: Sequelize.STRING,
 	password: Sequelize.STRING
-}, {freezeTableName: true});
+}, {freezeTableName: true,
+	instanceMethods: { // bcrypt
+		generateHash: function(password) {
+			return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+		},
+		validPassword: function (password) {
+			return bcrypt.compareSync(password, this.password);
+		},
+	}
+});
 
 var message = sequelize.define("message", {
 	username: Sequelize.STRING,
 	title: Sequelize.STRING,
 	text: Sequelize.TEXT
+}, {freezeTableName: true});
+
+var comment = sequelize.define("comment", {
+	username: Sequelize.STRING,
+	messageId: Sequelize.INTEGER,
+	comment: Sequelize.TEXT
 }, {freezeTableName: true});
 
 //////////////////////////////////
@@ -56,11 +70,10 @@ app.post('/register', function (request, response){
 			password: request.body.newPassWord
 		});
 
-		request.session.logIn = true;
-
+		request.session.logIn = true; // in order to redirect to profile of user
 		var unUpperCase = unLowerCase.charAt(0).toUpperCase() + unLowerCase.slice(1);    	
-
-		request.session.unUpperCase = unUpperCase
+		request.session.unUpperCase = unUpperCase;
+		request.session.unLowerCase = unLowerCase;
 
 		response.redirect('/profile');
 
@@ -101,16 +114,32 @@ app.post('/login', function (request, response){
 
 			request.session.unUpperCase = unUpperCase// you can put everything into a session to use in a different route
 
-			response.redirect('/profile');
+			response.redirect('/welcome');
 
 		}
 
 	})
 })
 
+app.get('/welcome', function (request, response) { // seperate route for welcome animation
+
+	var logIn = request.session.logIn; // login-in is true;
+
+	if (logIn === true) {
+
+		var unUpperCase = request.session.unUpperCase // to use name user for the intro fade out;
+
+		response.render('welcome', {nameUser: unUpperCase});
+
+	} else {
+
+		response.render('index', {none: "Please log in to view your profile"});
+	}
+})
+
 app.get('/profile', function (request, response) {
 
-	var unLowerCase = request.session.unLowerCase // gebruikersnaam in kleine letters;
+	var unLowerCase = request.session.unLowerCase // username in lowercase to find messages user
 	var logIn = request.session.logIn; // login-in is true;
 
 	if (logIn === true) {
@@ -122,8 +151,8 @@ app.get('/profile', function (request, response) {
 		})
 
 		.then(function(data){
-				
-			var unUpperCase = request.session.unUpperCase // naam user boven logout link en intro fade out;
+
+			var unUpperCase = request.session.unUpperCase // name user for logout link
 
 			if (data.length == 0) {
 
@@ -131,24 +160,22 @@ app.get('/profile', function (request, response) {
 
 			} else {  
 
-				var messages = [];
+				// var messages = [];
 
-				for(i = 0; i < data.length; i++) {
+				// for(i = 0; i < data.length; i++) {
 
-					messageObject = {
-						title: data[i].title,
-						text: data[i].text
-					}
+				// 	messageObject = {
+				// 		title: data[i].title,
+				// 		text: data[i].text
+				// 	}
 
-				messages.push(messageObject);
+				// 	messages.push(messageObject);
 
-				}
+				// }
 
-			request.session.messages = messages;
+				// request.session.messages = messages; 
 
-			response.render("profile", {nameUser: unUpperCase}); 
-			// all: messages meegeven aan profile om lijst berichten door user weer te geven zonder AJAX
-
+				response.render("profile", {nameUser: unUpperCase});
 			}
 		})	
 		
@@ -158,56 +185,56 @@ app.get('/profile', function (request, response) {
 	}
 })
 
-app.get('/myposts', function (request, response){
+app.get('/myposts', function (request, response){ // AJAX for the messages of the user
 
 	var unLowerCase = request.session.unLowerCase
 
+	console.log("AJAX usernam: " + unLowerCase);
+
 	message.findAll({ 
-			where: {
-				username: unLowerCase, 
-			}
-		})
+		where: {
+			username: unLowerCase, 
+		}
+	})
 	.then(function(data){
 
 		var messages = [];
 
 		for(i = 0; i < data.length; i++) { 
 
-			messages.push(data[i].title + ": " + data[i].text + "<br>")
+			messages.push("<a href='/profile/message/" + data[i].id + "'>" + data[i].title + "</a>" + ": " + data[i].text + "<br>")
+			//pushing the id of the message in the a link in order to view the message on seperate route. Note the double " & '
 
 		}
 
-	response.send(messages)
+		console.log("AJAX my messages: " + messages);
+
+		response.send(messages)
 
 	})
 })
 
-app.get('/allposts', function (request, response){
+app.get('/allposts', function (request, response){ // AJAX for list of all messages
 
 	message.findAll().then(function(data){
-
-		console.log("kikkers zijn groen")
 
 		var messages = [];
 
 		for(i = 0; i < data.length; i++) { 
 
-			messages.push(data[i].title + ": " + data[i].text + "<br>")
+			messages.push("<a href='/profile/message/" + data[i].id + "'>" + data[i].title + "</a>" + ": " + data[i].text + "<br>")
 
 		}
 
-	response.send(messages)
-
+		response.send(messages)
 	})
 })
 
-app.get('/createpost', function (request, response){
+app.get('/createpost', function (request, response){ //AJAX to write message to database
+	
 	var nTitle = request.query.baby;
 	var nText = request.query.maybe;
 	var unLowerCase = request.session.unLowerCase;
-
-	console.log(nTitle);
-	console.log(nText);
 
 	if (nTitle && nText !== "") {
 
@@ -220,59 +247,107 @@ app.get('/createpost', function (request, response){
 			text: nText
 		});
 
-		response.redirect('/myposts');
+		response.send("post succesfully created");
 
 	} else {
 
 		response.send("empty field, please fill in both forms");
 
 	}
+})
 
+app.get('/profile/message/:id', function (request, response){ // route to render 3rd page to show specific message and its comments
+
+	var logIn = request.session.logIn;
+
+	var messageId = request.params.id;
+	request.session.messageId = messageId; // created a session to link message-id to comment
+
+	if (logIn === true) { 
+
+		console.log("request parameter: " + messageId);
+
+		message.findAll({
+			where: {
+				id: messageId
+			}
+		})
+		.then(function(data){
+
+			var username = data[0].username;
+			var author = username.charAt(0).toUpperCase() + username.slice(1);
+			var unUpperCase = request.session.unUpperCase
+			var title = data[0].title;
+			var text = data[0].text;
+			var date = data[0].createdAt;
+
+			response.render('message', {id: messageId, username: author, title: title, text: text, date: date, nameUser: unUpperCase});
+		})
+
+	}
 
 })
 
-app.post('/profile', function(request, response){
+app.post('/profile/message/:id', function (request, response){ // write comment to database
 
-	var unLowerCase = request.session.unLowerCase;
-	var unUpperCase = request.session.unUpperCase;
+	console.log("commentpost is: " + request.body.comment)
 
-	if (request.body.newTitle && request.body.newText !== []) {
+	if (request.body.comment !== []) {
 
-		console.log("Creating message in database");
+		var unLowerCase = request.session.unLowerCase;
+		var messageId = request.session.messageId;
 
-		message.create({
+		console.log(messageId);
 
+		comment.create({
 			username: unLowerCase,
-			title: request.body.newTitle,
-			text: request.body.newText
+			messageId: messageId,
+			comment: request.body.comment
 		});
 
+		console.log("comment created")
 
-
-		// var messages = request.session.messages
-
-		// var newMessage = {
-		// 	title: request.body.newTitle,
-		// 	text: request.body.newText
-		// }
-
-		// console.log(newMessage);
-
-		// messages.push(newMessage);
-
-		response.render("profile", {nameUser: unUpperCase, error: "Post Successfully written"});
+		response.redirect('back'); // this send it back to last route
 
 	} else {
 
-		response.render('/profile', {nameUser: unUpperCase, error: "empty field, please fill in both forms"})
-
+		response.end();
 	}
 })
 
+app.get('/comments', function (request, response){ // AJAX route to load comments
 
-app.get('/logout', function (request, response){
-			request.session.logIn = false;
-			response.render('index', {error: "Successfully logged out"})
+	var messageId = request.session.messageId;
+
+	comment.findAll({ 
+		where: {
+			messageId: messageId, 
+		}
+	})
+	.then(function(data){
+
+		var comments = [];
+
+		for(i = 0; i < data.length; i++) { 
+
+			comments.push({comment: data[i].comment, username: data[i].username, date: data[i].createdAt})
+		}
+
+		console.log("dit zijn de comments: " + comments)
+
+		response.send(comments);
+
+	})
+
+})
+
+
+app.get('/logout', function (request, response){ // end all sessions
+	request.session.logIn = false;
+	request.session.unLowerCase = "";
+	request.session.unUpperCase = "";
+	request.session.messageId = "";
+	response.render('index', {error: "Successfully logged out"})
 
 })
 

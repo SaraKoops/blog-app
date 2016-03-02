@@ -1,0 +1,29 @@
+doctype html
+html
+	head
+		link(rel='stylesheet' href='/styles/message.css')
+		script(src='https://code.jquery.com/jquery-2.2.0.js')
+		script(src='/js/message.js')
+	body
+		h4 Post #{id}
+		p #{username} wrote on #{date}: 
+		p #{title}
+		p #{text}
+		a(href='/profile') back to all messages
+		div(id='logout')
+			h4(id='user') #{nameUser}
+			a(href='/logout') logout
+		form(action='/profile/message/:id' method='post')
+			h4 Write a comment:
+			p(id='note')=bloem
+			br
+			input(id='comment' type='text' name='comment' placeholder='type your comment here...')
+			br
+			br
+			input(id='postcomment' type='submit' value='Post')
+		div(id='commentwall')
+			h4 Comments: 
+			p(id='list')
+			
+
+

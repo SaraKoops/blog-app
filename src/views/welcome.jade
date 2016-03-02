@@ -1,0 +1,13 @@
+doctype html
+html
+	head
+		link(rel='stylesheet' href='styles/welcome.css')
+		link(href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css')
+		script(src='https://code.jquery.com/jquery-2.2.0.js')
+		script(src='js/welcome.js')
+	body
+		h2(id='welcomeback') Welcome back,
+		h1(id='kop') #{nameUser}
+		div(id='logout')
+			p(id='user') #{nameUser}
+			a(href='/logout') logout
