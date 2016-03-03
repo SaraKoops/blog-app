@@ -62,24 +62,30 @@ app.post('/register', function (request, response){
 	var username = request.body.newUserName;
 	var unLowerCase= username.toLowerCase();
 
+	if (username && request.body.newPassWord !== "") {
 
-	if (request.body.newPassWord == request.body.checkPassWord) {
+		if (request.body.newPassWord == request.body.checkPassWord) {
 
-		user.create({
-			username: unLowerCase,
-			password: request.body.newPassWord
-		});
+			user.create({
+				username: unLowerCase,
+				password: request.body.newPassWord
+			});
 
-		request.session.logIn = true; // in order to redirect to profile of user
-		var unUpperCase = unLowerCase.charAt(0).toUpperCase() + unLowerCase.slice(1);    	
-		request.session.unUpperCase = unUpperCase;
-		request.session.unLowerCase = unLowerCase;
+			request.session.logIn = true; // in order to redirect to profile of user
+			var unUpperCase = unLowerCase.charAt(0).toUpperCase() + unLowerCase.slice(1);    	
+			request.session.unUpperCase = unUpperCase;
+			request.session.unLowerCase = unLowerCase;
 
-		response.redirect('/profile');
+			response.redirect('/profile');
 
+		} else {
+
+			var error = "typo in password, try again"
+			response.render("index", {error: error})
+		}
 	} else {
 
-		var error = "typo in password, try again"
+		var error = "empty field, please fill in both forms"
 		response.render("index", {error: error})
 	}
 })

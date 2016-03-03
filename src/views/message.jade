@@ -2,28 +2,32 @@ doctype html
 html
 	head
 		link(rel='stylesheet' href='/styles/message.css')
+		link(href='https://fonts.googleapis.com/css?family=Advent+Pro:300' rel='stylesheet' type='text/css')
 		script(src='https://code.jquery.com/jquery-2.2.0.js')
 		script(src='/js/message.js')
 	body
-		h4 Post #{id}
-		p #{username} wrote on #{date}: 
-		p #{title}
-		p #{text}
-		a(href='/profile') back to all messages
-		div(id='logout')
-			h4(id='user') #{nameUser}
-			a(href='/logout') logout
-		form(action='/profile/message/:id' method='post')
-			h4 Write a comment:
-			p(id='note')=bloem
-			br
-			input(id='comment' type='text' name='comment' placeholder='type your comment here...')
-			br
-			br
-			input(id='postcomment' type='submit' value='Post')
-		div(id='commentwall')
-			h4 Comments: 
-			p(id='list')
+		div(id='wrapper')
+			div(class='div')
+				h2 Post #{id}
+				p #{username} wrote on #{date}: 
+				p(id='title') #{title}
+				p #{text}
+			div(id='logout')
+				h4(id='user') #{nameUser}
+				a(href='/logout') logout
+			div(class='div')
+				form(id='div' action='/profile/message/:id' method='post')
+					h2 Write a comment:
+					p(id='note')=bloem
+					br
+					textarea(id='comment' type='text' name='comment' placeholder="'sup?!")
+					br
+					br
+					input(id='postcomment' type='submit' value='post')
+			div(id='commentwall' class='div')
+				h2 Comments: 
+				p(id='list')
+			a(id='back' href='/profile') back to all messages
 			
 
 

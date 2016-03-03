@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
 
 	$.ajax ({ // ajax request comments on post

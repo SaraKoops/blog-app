@@ -53,6 +53,8 @@ runAjax();
 			   		runAjax();
 
 			   		$('#error').html(data);
+			   		$('#title').val('');
+			   		$('#text').val('');
 
 			   	},
 
