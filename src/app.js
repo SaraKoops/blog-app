@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var app = express();
-var bcrpt = require('bcrypt');
+var bcrypt = require('bcrypt');
 
 app.set('views', 'src/views');
 app.set('view engine', 'jade');
@@ -27,16 +27,7 @@ app.use(session({
 var user = sequelize.define("user", {
 	username: Sequelize.STRING,
 	password: Sequelize.STRING
-}, {freezeTableName: true,
-	instanceMethods: { // bcrypt
-		generateHash: function(password) {
-			return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-		},
-		validPassword: function (password) {
-			return bcrypt.compareSync(password, this.password);
-		},
-	}
-});
+}, {freezeTableName: true});
 
 var message = sequelize.define("message", {
 	username: Sequelize.STRING,
@@ -49,6 +40,9 @@ var comment = sequelize.define("comment", {
 	messageId: Sequelize.INTEGER,
 	comment: Sequelize.TEXT
 }, {freezeTableName: true});
+
+message.hasMany(comment);
+comment.belongsTo(message);
 
 //////////////////////////////////
 
@@ -66,9 +60,18 @@ app.post('/register', function (request, response){
 
 		if (request.body.newPassWord == request.body.checkPassWord) {
 
-			user.create({
-				username: unLowerCase,
-				password: request.body.newPassWord
+			var password = request.body.newPassWord// encryption
+			bcrypt.hash(password, 8, function(err, hash) {
+
+	  			if (err !== undefined) {
+	    			console.log(err);
+	  			} else {
+	    			user.create({
+						username: unLowerCase,
+						password: hash
+					});
+	  			}
+
 			});
 
 			request.session.logIn = true; // in order to redirect to profile of user
@@ -95,37 +98,34 @@ app.post('/login', function (request, response){
 	var username = request.body.userName;
 	var unLowerCase = username.toLowerCase();
 	request.session.unLowerCase = unLowerCase;
+	var password = request.body.passWord;
 
+	user.findOne({
+			where: {
+				username: unLowerCase,
+			}
+		}).then(function(user) {
+			bcrypt.compare(password, user.password, function(err, result) {
+				if (err !== undefined) {
+					console.log(err);
+					response.render("index", {none: "No matching users"});
+				} else {
 
-	user.findAll({ 
-		where: {
-			username: unLowerCase, 
-			password: request.body.passWord
-		}
-	})
+					request.session.logIn = true;
 
-	.then(function(data){
+					var nameUser = request.body.userName;
 
-		if (data.length == 0) {
+					var unUpperCase = nameUser.charAt(0).toUpperCase() + nameUser.slice(1); //maak username met hoofdleter voor animatie
 
-			response.render("index", {none: "No matching users"});
+					request.session.unUpperCase = unUpperCase// you can put everything into a session to use in a different route
 
-		} else { 
+					response.redirect('/welcome');
 
-			request.session.logIn = true;
+				}
+			})
+		})
+});
 
-			var nameUser = data[0].username
-
-			var unUpperCase = nameUser.charAt(0).toUpperCase() + nameUser.slice(1); //maak username met hoofdleter voor animatie
-
-			request.session.unUpperCase = unUpperCase// you can put everything into a session to use in a different route
-
-			response.redirect('/welcome');
-
-		}
-
-	})
-})
 
 app.get('/welcome', function (request, response) { // seperate route for welcome animation
 
