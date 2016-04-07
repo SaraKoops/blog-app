@@ -3,22 +3,31 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var app = express();
 var bcrypt = require('bcrypt');
+var sassMiddleware = require('node-sass-middleware');
 
 app.set('views', 'src/views');
 app.set('view engine', 'jade');
 
 app.use(session({
-	secret: 'De lievelingskleur van Yoni is blauw',
+	secret: 'so much secret',
 	resave: true,
 	saveUninitialized: false
 }));
 
-	app.use(express.static('public')); // every static file (jade) grapping from folder public
-	app.use(bodyParser.urlencoded({extended: true}));
+app.use('/styles', sassMiddleware({
+	src: __dirname + '/sass',
+	dest: __dirname + '/../public/styles',
+	debug: true,
+	outputStyle: 'expanded'
+}));
 
-	var pg = require('pg');
-	var Sequelize = require('sequelize');
-	var sequelize = new Sequelize("postgres://sara:123@localhost/sara");
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: true}));
+
+
+var pg = require('pg');
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize("postgres://sara:123@localhost/sara");
 // var sequelize = new Sequelize ('blog', 'sara', nul, {
 // 	host: 'localhost',
 // 	dialect: 'postgres'
