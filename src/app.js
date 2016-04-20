@@ -1,3 +1,6 @@
+///////////////////////////////
+//server-settings
+//////////////////////////////
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
@@ -55,11 +58,13 @@ comment.belongsTo(message);
 
 //////////////////////////////////
 
+//route 1: renders a page that displays login/register screen
 app.get('/', function (request, response){
 
 	response.render("index");
 });
 
+//Will register a new user and redirect to profile page
 app.post('/register', function (request, response){
 
 	var username = request.body.newUserName;
@@ -88,7 +93,7 @@ app.post('/register', function (request, response){
 			request.session.unUpperCase = unUpperCase;
 			request.session.unLowerCase = unLowerCase;
 
-			response.redirect('/profile');
+			response.redirect('/welcome');
 
 		} else {
 
@@ -102,6 +107,7 @@ app.post('/register', function (request, response){
 	}
 })
 
+//Will login the username
 app.post('/login', function (request, response){
 
 	var username = request.body.userName;
@@ -124,7 +130,7 @@ app.post('/login', function (request, response){
 
 					var nameUser = request.body.userName;
 
-					var unUpperCase = nameUser.charAt(0).toUpperCase() + nameUser.slice(1); //maak username met hoofdleter voor animatie
+					var unUpperCase = nameUser.charAt(0).toUpperCase() + nameUser.slice(1); // username met hoofdleter
 
 					request.session.unUpperCase = unUpperCase// you can put everything into a session to use in a different route
 
@@ -135,7 +141,7 @@ app.post('/login', function (request, response){
 		})
 });
 
-
+//Mini jquery animation
 app.get('/welcome', function (request, response) { // seperate route for welcome animation
 
 	var logIn = request.session.logIn; // login-in is true;
@@ -152,6 +158,7 @@ app.get('/welcome', function (request, response) { // seperate route for welcome
 	}
 })
 
+//renders te profile page
 app.get('/profile', function (request, response) {
 
 	var unLowerCase = request.session.unLowerCase // username in lowercase to find messages user
@@ -185,7 +192,8 @@ app.get('/profile', function (request, response) {
 	}
 })
 
-app.get('/myposts', function (request, response){ // AJAX for the messages of the user
+// AJAX request for the messages of the user
+app.get('/myposts', function (request, response){ 
 
 	var unLowerCase = request.session.unLowerCase
 
@@ -214,7 +222,8 @@ app.get('/myposts', function (request, response){ // AJAX for the messages of th
 	})
 })
 
-app.get('/allposts', function (request, response){ // AJAX for list of all messages
+// AJAX to list messages from all users
+app.get('/allposts', function (request, response){ 
 
 	message.findAll().then(function(data){
 
@@ -230,7 +239,8 @@ app.get('/allposts', function (request, response){ // AJAX for list of all messa
 	})
 })
 
-app.get('/createpost', function (request, response){ //AJAX to write message to database
+//AJAX to write message to database
+app.get('/createpost', function (request, response){ 
 	
 	var nTitle = request.query.baby;
 	var nText = request.query.maybe;
@@ -256,7 +266,8 @@ app.get('/createpost', function (request, response){ //AJAX to write message to 
 	}
 })
 
-app.get('/profile/message/:id', function (request, response){ // route to render 3rd page to show specific message and its comments
+// route to render page that shows a specific message and its comments
+app.get('/profile/message/:id', function (request, response){ 
 
 	var logIn = request.session.logIn;
 
@@ -288,7 +299,8 @@ app.get('/profile/message/:id', function (request, response){ // route to render
 
 })
 
-app.post('/profile/message/:id', function (request, response){ // write comment to database
+// write the comment to message to database
+app.post('/profile/message/:id', function (request, response){ 
 
 	console.log("commentpost is: " + request.body.comment)
 
@@ -315,7 +327,8 @@ app.post('/profile/message/:id', function (request, response){ // write comment 
 	}
 })
 
-app.get('/comments', function (request, response){ // AJAX route to load comments
+// AJAX route to load comments
+app.get('/comments', function (request, response){ 
 
 	var messageId = request.session.messageId;
 
@@ -341,7 +354,7 @@ app.get('/comments', function (request, response){ // AJAX route to load comment
 
 })
 
-
+//end session and logout user
 app.get('/logout', function (request, response){ // end all sessions
 	request.session.logIn = false;
 	request.session.unLowerCase = "";

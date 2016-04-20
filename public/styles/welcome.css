@@ -1,51 +1,48 @@
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-html, body { 
-   background-color: #FFFFFF;
-   height:  92%;
-   margin:  0px;
-   padding: 0px;
- }
+html, body {
+  background-color: #FFFFFF;
+  height: 92%;
+  margin: 0px;
+  padding: 0px;
+}
 
 #wrapper {
-	height: auto;
-	min-height: 100%;
-	margin: 3em;
-	padding: 2em;
-    border: solid #9D90C4 1px;
-    border-radius: 10px;
-    text-align: center;
-
+  height: auto;
+  min-height: 100%;
+  margin: 3em;
+  padding: 2em;
+  border: solid #9D90C4 1px;
+  border-radius: 10px;
+  text-align: center;
 }
 
 #logout {
-	border: 2px #F5C25E solid;
-	border-radius: 10px;
-	padding: 1em;
-	width: 10%;
-	float: right;
-
+  border: 2px #F5C25E solid;
+  border-radius: 10px;
+  padding: 1em;
+  width: 10%;
+  float: right;
 }
 
 #user {
-	margin: 0px;
+  margin: 0px;
 }
-	
+
 h1 {
-	font-family: 'Pacifico', cursive;
-	font-size: 900%;
-	color: #1A194A;
-	margin-top: 2%;
-	margin-bottom: 0;
-	z-index: -1;
+  font-family: 'Pacifico', cursive;
+  font-size: 900%;
+  color: #1A194A;
+  margin-top: 2%;
+  margin-bottom: 0;
+  z-index: -1;
 }
 
 h2 {
-	font-family: 'Advent Pro', sans-serif;
-	font-size: 180%;
-	margin: 0;
-	z-index: 1;
+  font-family: 'Advent Pro', sans-serif;
+  font-size: 180%;
+  margin: 0;
+  z-index: 1;
 }
-
